@@ -8,8 +8,6 @@ const mysql = require("mysql");
 const path = require("path");
 const connection = require("./db/connection");
 
-
-
 // JAVASCRIPT //
 
 function menu() {
@@ -19,15 +17,21 @@ function menu() {
                 type: "list",
                 name: "userAction",
                 message: "What would you like to do?",
-                choices: ["View Employees", "View Departments", "Add Employees", "Delete Employees", "Edit Employees"]
+                choices: ["View Employees", "View Roles", "View Departments", "View All", "Add Employees", "Delete Employees", "Edit Employees"]
             }
         ]).then((response) => {
             switch (response.userAction) {
                 case "View Employees":
                     viewEmployee();
                     break
-                    case "View Departments":
+                case "View Roles":
+                    viewRole();
+                    break
+                case "View Departments":
                     viewDepartment();
+                    break
+                case "View All":
+                    viewAll();
                     break
                 case "Add Employees":
                     addEmployee();
@@ -44,11 +48,20 @@ function menu() {
         })
     }
 
-
     // VIEW EMPLOYEES //
 
     function viewEmployee() {
-        var query = connection.query( "SELECT employee.id, employee.firstname, employee.lastname, role.salary, role.id, role.title FROM employee INNER JOIN role ON employee.id = role.id", function (err, res) {
+        var query = connection.query("SELECT firstname, lastname, role_id, manager_id FROM employee", function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            prompt();
+        })
+    }
+
+    // VIEW ROLES //
+
+    function viewRole() {
+        var query = connection.query("SELECT title, salary, department_id FROM role", function (err, res) {
             if (err) throw err;
             console.table(res);
             prompt();
@@ -58,17 +71,23 @@ function menu() {
     // VIEW DEPARTMENT //
 
     function viewDepartment() {
-        var query = connection.query( "SELECT employee.id, employee.firstname, employee.lastname, department.depart_name FROM employee INNER JOIN department ON employee.id = department.id", function (err, res) {
+        var query = connection.query("SELECT depart_name FROM department", function (err, res) {
             if (err) throw err;
             console.table(res);
             prompt();
         })
     }
 
+    // VIEW ALL //
 
+    function viewAll() {
+        var query = connection.query("SELECT employee.id, employee.firstname, employee.lastname, department.depart_name, role.title, role.salary FROM employee INNER JOIN department ON employee.id = department.id INNER JOIN role ON employee.id = role.id", function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            prompt();
+        })
+    }
 
-
-    
     // ADD EMPLOYEE //
 
     function addEmployee() {
@@ -152,15 +171,15 @@ function menu() {
             var query = connection.query("DELETE FROM employee WHERE firstname =? ", remEmployee, function (err, res) {
                 if (err) throw err;
             })
-            // var query = connection.query("DELETE  FROM role WHERE firstname =? ", remEmployee, function (err, res) {
-            //     if (err) throw err;
-            // })
-            
+            var query = connection.query("DELETE FROM role WHERE firstname =? ", remEmployee, function (err, res) {
+                if (err) throw err;
+            })
+
             prompt();
         })
 
     }
-    
+
 
 
     function editEmployee() {

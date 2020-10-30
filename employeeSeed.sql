@@ -7,7 +7,7 @@ USE employee_DB;
 CREATE TABLE department (
 
     id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(30),
+    depart_name VARCHAR(30),
      PRIMARY KEY (id)
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE employee (
 );
     
 
-INSERT INTO department(name)
+INSERT INTO department(depart_name)
 VALUES ("HR"), ("SALES"), ("TECH");
 
 INSERT INTO role (title, salary, department_id)
