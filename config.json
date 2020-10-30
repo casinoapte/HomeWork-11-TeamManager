@@ -3,5 +3,5 @@
     "port": 3306,
     "user": "root",
     "password": "casino123",
-    "database": "great_bayDB"
+    "database": "employee_DB"
 }

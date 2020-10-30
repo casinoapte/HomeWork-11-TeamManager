@@ -1,96 +1,152 @@
 // REQUIREMENTS //
+const Employee = require("./lib/employee")
+const Role = require("./lib/role")
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const path = require("path");
-const connection = require("./db/connection")
-// const config = require("./config.json");
+const connection = require("./db/connection");
+
 
 
 // JAVASCRIPT //
 
-function menu(){
-
-    function init(){
-        prompt();
-
-
-
-
-
-
-
-    }
-
-    function prompt(){
-
+function menu() {
+    function prompt() {
         inquirer.prompt([
-
             {
                 type: "list",
                 name: "userAction",
                 message: "What would you like to do?",
-                choices: ["View Employees", "Add Employees", "Delete Employee", "Edit Employee"]
+                choices: ["View Employees", "Add Employees", "Delete Employees", "Edit Employees"]
             }
         ]).then((response) => {
-            switch (response.userAction){
+            switch (response.userAction) {
                 case "View Employees":
                     viewEmployee();
-                break
+                    break
                 case "Add Employees":
                     addEmployee();
-                break
+                    break
                 case "Delete Employees":
                     deleteEmployee();
-                break
-                case "Delete Employees":
+                    break
+                case "Edit Employees":
                     editEmployee();
-                break
+                    break
                 default:
                     viewEmployee()
             }
         })
-
-        async function viewEmployee(){
-            
-            // const employee = await
+    }
 
 
+    // VIEW EMPLOYEES //
 
-        }
+    function viewEmployee() {
+        var query = connection.query( "SELECT employee.id, employee.firstname, employee.lastname, role.salary, role.id, role.title FROM employee INNER JOIN role ON employee.id = role.id", function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            prompt();
+        })
+    }
+    
+    "SELECT employee.id, employee.firstname, employee.lastname, employee.manager_id, department.depart_name, department.id FROM employee INNER JOIN department ON employee.id = department.id"
 
-        function addEmployee(){
-            
-        }
+    // ADD EMPLOYEE //
 
-        async function deleteEmployee(){
-            const employees = await db.findAllEmployees();
-            const employeeChoices = 0;
-            inquirer.prompt([
-                {
-                    type: "checkbox",
-                    name: "del-employee",
-                    message: "Which employees do you want to delete?",
-                    choices: ["Bob", "Joe", "Sally"]
-                }
-            ]).then((response) => {
-                await db.removeEmployee(employee.id)
-                console.log("Employee Removed");
-                prompt();
+    function addEmployee() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "employeeFirstName",
+                message: "What is the first name of the employee you are adding?"
+            },
+            {
+                type: "input",
+                name: "employeeLastName",
+                message: "What is the last name of the employee you are adding?"
+            },
+            {
+                type: "input",
+                name: "employeeRole",
+                message: "What is this employees role ID?"
+            },
+            {
+                type: "input",
+                name: "employeeManager",
+                message: "What is this employees Manager ID?"
+            },
+            {
+                type: "input",
+                name: "roleTitle",
+                message: "What is this employees title?"
+            },
+            {
+                type: "input",
+                name: "roleSalary",
+                message: "What is this employees salary?"
+            },
+            {
+                type: "input",
+                name: "roleDepartID",
+                message: "What is this employees department ID?"
+            },
+        ])
+            .then((res) => {
+                createEmp(res);
             })
+        function createEmp(res) {
+            console.log("Added Employee to Database...");
+            const newEmployee = new Employee(res.employeeFirstName, res.employeeLastName, res.employeeRole, res.employeeManager)
+            const newRole = new Role(res.roleTitle, res.roleSalary, res.roleDepartID)
+            var query = connection.query("INSERT INTO employee SET ?", newEmployee, function (err, res) {
+                if (err) throw err;
+            })
+            var query = connection.query("INSERT INTO role SET ?", newRole, function (err, res) {
+                if (err) throw err;
+            })
+            prompt();
         }
-
-        function editEmployee(){
-            
-        }
+    }
 
 
+    // DELETE EMPLOYEES //
 
+    async function deleteEmployee(res) {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "employeeRemove",
+                message: "Which employee do you want to delete?",
+            }
+        ]).then((res) => {
 
-
-
+            var remEmployee = res.employeeRemove
+            var query = connection.query("DELETE  FROM employee WHERE firstname =? ", remEmployee, function (err, res) {
+                if (err) throw err;
+            })
+            prompt();
+        })
 
     }
-    init();
+
+
+
+    function editEmployee() {
+        prompt();
+    }
+
+
+
+
+
+
+
+
+
+
+
+    prompt();
 }
 
 menu()
