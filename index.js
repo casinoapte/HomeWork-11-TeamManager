@@ -155,11 +155,12 @@ function menu() {
             // var query = connection.query("DELETE  FROM role WHERE firstname =? ", remEmployee, function (err, res) {
             //     if (err) throw err;
             // })
+            
             prompt();
         })
 
     }
-
+    
 
 
     function editEmployee() {
