@@ -1,16 +1,19 @@
-// REQUIREMENTS //
+// CLASSES //
 const Employee = require("./lib/employee")
 const Role = require("./lib/role")
 const Department = require("./lib/department")
 
+
+// REQUIREMENTS //
 const inquirer = require("inquirer");
-const mysql = require("mysql");
-const path = require("path");
 const connection = require("./db/connection");
 
 // JAVASCRIPT //
 
 function menu() {
+
+    // STARTING PROMPT QUESTIONS //
+
     function prompt() {
         inquirer.prompt([
             {
@@ -158,45 +161,41 @@ function menu() {
 
     // DELETE EMPLOYEES //
 
-    async function deleteEmployee(res) {
-        inquirer.prompt([
-            {
-                type: "input",
-                name: "employeeRemove",
-                message: "Which employee do you want to delete?",
-            }
-        ]).then((res) => {
+    function deleteEmployee(res) {
+        var query = connection.query("SELECT firstname, lastname from employee", function (err, data) {
+            if (err) throw err;
+            console.table(data);
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "employeeRemove",
+                    message: "Which employee do you want to delete?",
+                    choices: data
+                }
+            ])
+        }).then((res) => {
+            var remEmployee = data.employeeRemove
+            var query = connection.query("DELETE firstname FROM employee WHERE firstname =?", remEmployee, function (err, data) {
 
-            var remEmployee = res.employeeRemove
-            var query = connection.query("DELETE FROM employee WHERE firstname =? ", remEmployee, function (err, res) {
-                if (err) throw err;
-            })
-            var query = connection.query("DELETE FROM role WHERE firstname =? ", remEmployee, function (err, res) {
-                if (err) throw err;
-            })
 
-            prompt();
+                
+            })
         })
-
-    }
-
-
-
-    function editEmployee() {
         prompt();
     }
 
 
 
+    function editEmployee() {
 
 
 
 
 
+        prompt();
+    }
 
-
-
-    prompt();
+    prompt()
 }
 
 menu()
