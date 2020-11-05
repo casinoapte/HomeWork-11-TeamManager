@@ -28,3 +28,6 @@ Learning SQL joins was the hardest part of this project, I still do not understa
 
 ## USAGE AND FUTURE IMPROVEMENTS:
 Not all functions work completely, they have some bugs due to the joining of tables. This issue needs to be resolved but I did not have the time, nor the skill to do so.
+
+## Questions:
+If you have any issues with the program or would like to discuss anything related to the project. Please reach out to me at: casino.apte@gmail.com.
